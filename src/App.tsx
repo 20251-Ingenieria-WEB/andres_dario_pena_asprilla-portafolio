@@ -1,33 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
-
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from './components/ui/resizable'
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <ResizablePanelGroup direction="horizontal" className="rounded-lg border md:min-w-[450px] ">
+        <ResizablePanel className="w-2" style={{backgroundColor: '#e8f8f5'}} defaultSize={20}>
+            <div className="flex flex-col items-center justify-center h-full w-full gap-3">
+             <div className="flex items-center justify-center">
+              <img src="/img side bar.png" alt="Sidebar visual aid" />
+            </div>
+            <div>
+              Andrés Peña
+            </div>
+            <div>
+              Ingeniero de software
+            </div>
+            <div>
+              
+            </div>
+          </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel className="w-2" style={{backgroundColor: '#f0f3f4'}}>
+          <div className="flex flex-col items-center justify-center h-full w-full gap-3">
+            <div className="flex items-center justify-center">
+              <img src="/img body.png" alt="Body visual aid" />
+            </div>
+            <div>
+              <span>Two</span>
+            </div>
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </>
   )
 }
