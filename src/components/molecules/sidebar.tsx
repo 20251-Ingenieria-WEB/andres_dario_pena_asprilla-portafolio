@@ -5,23 +5,23 @@ import { PanelLeftIcon } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
+import { Button } from "@/components/atoms/button"
+import { Input } from "@/components/atoms/input"
+import { Separator } from "@/components/atoms/separator"
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet"
-import { Skeleton } from "@/components/ui/skeleton"
+} from "@/components/molecules/sheet"
+import { Skeleton } from "@/components/atoms/skeleton"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/atoms/tooltip"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -30,27 +30,32 @@ const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
-type SidebarContextProps = {
-  state: "expanded" | "collapsed"
-  open: boolean
-  setOpen: (open: boolean) => void
-  openMobile: boolean
-  setOpenMobile: (open: boolean) => void
-  isMobile: boolean
-  toggleSidebar: () => void
+interface SidebarContextProps {
+  collapsed: boolean; // True if the sidebar is collapsed
+  setCollapsed: (collapsed: boolean | ((prevCollapsed: boolean) => boolean)) => void; // Function to set the collapsed state
+  isMobile: boolean; // True if the current view is mobile
+  state: "expanded" | "collapsed"; // Current visual state of the sidebar ("expanded" or "collapsed")
+  openMobile: boolean; // State of the sidebar in mobile view (true if open, managed by Sheet)
+  setOpenMobile: (open: boolean | ((prevOpen: boolean) => boolean)) => void; // Function to set the mobile sidebar's open state
+  toggleSidebar: () => void; // Function to toggle the sidebar's open/collapsed state (or mobile open state)
 }
 
-const SidebarContext = React.createContext<SidebarContextProps | null>(null)
+// Context for managing sidebar state
+const SidebarContext = React.createContext<SidebarContextProps | undefined>(
+  undefined
+)
 
+// Custom hook to access sidebar context
 function useSidebar() {
   const context = React.useContext(SidebarContext)
   if (!context) {
-    throw new Error("useSidebar must be used within a SidebarProvider.")
+    throw new Error("useSidebar must be used within a SidebarProvider")
   }
-
   return context
 }
 
+
+// Provider component for the sidebar context
 function SidebarProvider({
   defaultOpen = true,
   open: openProp,
@@ -71,24 +76,29 @@ function SidebarProvider({
   // We use openProp and setOpenProp for control from outside the component.
   const [_open, _setOpen] = React.useState(defaultOpen)
   const open = openProp ?? _open
+
   const setOpen = React.useCallback(
-    (value: boolean | ((value: boolean) => boolean)) => {
-      const openState = typeof value === "function" ? value(open) : value
+    (value: boolean | ((currentOpen: boolean) => boolean)) => {
+      const newOpenState = typeof value === "function" ? value(open) : value
       if (setOpenProp) {
-        setOpenProp(openState)
+        setOpenProp(newOpenState)
       } else {
-        _setOpen(openState)
+        _setOpen(newOpenState)
       }
 
       // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+      document.cookie = `${SIDEBAR_COOKIE_NAME}=${newOpenState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
     },
-    [setOpenProp, open]
+    [setOpenProp, open, _setOpen] // Added _setOpen to dependencies
   )
 
   // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(() => {
-    return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open)
+    if (isMobile) {
+      setOpenMobile((prev) => !prev)
+    } else {
+      setOpen((prev) => !prev)
+    }
   }, [isMobile, setOpen, setOpenMobile])
 
   // Adds a keyboard shortcut to toggle the sidebar.
@@ -109,19 +119,19 @@ function SidebarProvider({
 
   // We add a state so that we can do data-state="expanded" or "collapsed".
   // This makes it easier to style the sidebar with Tailwind classes.
-  const state = open ? "expanded" : "collapsed"
+  const sidebarVisualState = open ? "expanded" : "collapsed"
 
   const contextValue = React.useMemo<SidebarContextProps>(
     () => ({
-      state,
-      open,
-      setOpen,
+      collapsed: sidebarVisualState === "collapsed",
+      setCollapsed: setOpen,
       isMobile,
+      state: sidebarVisualState,
       openMobile,
       setOpenMobile,
       toggleSidebar,
     }),
-    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+    [sidebarVisualState, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
   )
 
   return (
@@ -161,7 +171,7 @@ function Sidebar({
   variant?: "sidebar" | "floating" | "inset"
   collapsible?: "offcanvas" | "icon" | "none"
 }) {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  const { isMobile, state, openMobile, setOpenMobile /* Add collapsed if used directly */ } = useSidebar() // Ensure all destructured properties are provided by context
 
   if (collapsible === "none") {
     return (
@@ -716,9 +726,9 @@ export {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarProvider,
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
   useSidebar,
+  SidebarProvider,
 }

@@ -7,7 +7,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
+} from "@/components/molecules/carousel";
 
 // Esta interfaz puede ser movida o importada si es usada en múltiples lugares,
 // o definida en el componente que la usa si es específica.

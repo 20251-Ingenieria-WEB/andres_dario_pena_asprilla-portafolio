@@ -8,7 +8,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from "@/components/molecules/sidebar";
 
 // Menu items.
 const items = [
@@ -22,7 +22,12 @@ const items = [
   },
 ];
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  // No specific props, inherits from HTMLDivElement
+}
+
+// AppSidebar component: Renders the main application sidebar with navigation links and a theme toggle.
+export function AppSidebar({}: AppSidebarProps) {
   return (
     <Sidebar side="right">
       <SidebarContent>

@@ -1,5 +1,5 @@
 "use client";
-import * as Sortable from "@/components/ui/sortable";
+import * as Sortable from "@/components/molecules/sortable";
 import * as React from "react";
 import { DiPython } from "react-icons/di";
 import { DiDocker } from "react-icons/di";

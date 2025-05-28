@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/atoms/button";
 import {
   Dialog,
   DialogClose,
@@ -9,9 +9,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/molecules/dialog";
 import { toast } from "sonner"
+
+// DialogDemo component: Renders a dialog for users to send a message, typically for hiring purposes.
 export function DialogDemo() {
+
+
   const [noButtonPosition, setNoButtonPosition] = React.useState({ x: 0, y: 0 });
 
   const handleNoButtonHover = () => {
@@ -19,6 +23,8 @@ export function DialogDemo() {
     const newY = Math.random() * 50 - 25;
     setNoButtonPosition({ x: newX, y: newY });
   };
+
+  // Function to handle sending the message (e.g., via WhatsApp)
 
   return (
     <Dialog>

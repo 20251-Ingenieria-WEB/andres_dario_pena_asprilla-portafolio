@@ -9,8 +9,9 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
+} from "@/components/molecules/sidebar"
 
+// AppSidebar component: Renders the main application sidebar with navigation links and a theme toggle.
 export function AppSidebar() {
   return (
     <Sidebar>
